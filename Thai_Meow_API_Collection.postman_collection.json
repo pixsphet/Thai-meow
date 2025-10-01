@@ -1,0 +1,619 @@
+{
+  "info": {
+    "name": "Thai Meow API Collection",
+    "description": "Complete API collection for Thai Meow App with MongoDB Atlas integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "68db4ffb42926b9c8645a416",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔧 Test & Health",
+      "item": [
+        {
+          "name": "Test API Connection",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test",
+              "host": ["{{baseUrl}}"],
+              "path": ["test"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👤 User Management",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"username\": \"newuser\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@thai-meow.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile\": {\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"bio\": \"Thai language learner\",\n    \"country\": \"TH\",\n    \"language\": \"th\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Stats",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stats\": {\n    \"total_xp\": 150,\n    \"level\": 2,\n    \"streak\": 5,\n    \"lessons_completed\": 3,\n    \"games_played\": 5\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "stats"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📊 Progress Management",
+      "item": [
+        {
+          "name": "Get User Progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/progress/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Game Progress",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"gameType\": \"vocabulary\",\n  \"gameName\": \"Basic Words\",\n  \"levelName\": \"Beginner\",\n  \"stageName\": \"Stage 1\",\n  \"score\": 85,\n  \"maxScore\": 100,\n  \"timeSpent\": 120,\n  \"correctAnswers\": 17,\n  \"totalQuestions\": 20\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/progress/game",
+              "host": ["{{baseUrl}}"],
+              "path": ["progress", "game"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Achievements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/achievements/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["achievements", "user", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Achievement Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/achievements/stats/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["achievements", "stats", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Achievements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/achievements",
+              "host": ["{{baseUrl}}"],
+              "path": ["achievements"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Check Achievements",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/achievements/check/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["achievements", "check", "{{userId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🎮 Game Data",
+      "item": [
+        {
+          "name": "Get Vocabulary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vocabulary",
+              "host": ["{{baseUrl}}"],
+              "path": ["vocabulary"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Vocabulary by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vocabulary/category?category=greetings",
+              "host": ["{{baseUrl}}"],
+              "path": ["vocabulary", "category"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "greetings"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Vocabulary by Lesson",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vocabulary/lesson?lessonId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["vocabulary", "lesson"],
+              "query": [
+                {
+                  "key": "lessonId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search Vocabulary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vocabulary/search?q=สวัสดี",
+              "host": ["{{baseUrl}}"],
+              "path": ["vocabulary", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "สวัสดี"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Games",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/games",
+              "host": ["{{baseUrl}}"],
+              "path": ["games"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Games by Level",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/games/level?level=beginner",
+              "host": ["{{baseUrl}}"],
+              "path": ["games", "level"],
+              "query": [
+                {
+                  "key": "level",
+                  "value": "beginner"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Games by Type",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/games/type?type=vocabulary",
+              "host": ["{{baseUrl}}"],
+              "path": ["games", "type"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "vocabulary"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📚 Lessons",
+      "item": [
+        {
+          "name": "Get Lessons",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Lessons by Level",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/level?level=beginner",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "level"],
+              "query": [
+                {
+                  "key": "level",
+                  "value": "beginner"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Lessons by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/lessons/category?category=greetings",
+              "host": ["{{baseUrl}}"],
+              "path": ["lessons", "category"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "greetings"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🎵 Audio",
+      "item": [
+        {
+          "name": "Get Audio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/audio?text=สวัสดี",
+              "host": ["{{baseUrl}}"],
+              "path": ["audio"],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "สวัสดี"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Simple Audio",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/simple-audio?text=สวัสดี",
+              "host": ["{{baseUrl}}"],
+              "path": ["simple-audio"],
+              "query": [
+                {
+                  "key": "text",
+                  "value": "สวัสดี"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get AI Audio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"สวัสดี\",\n  \"voice\": \"th-TH-Standard-A\",\n  \"speed\": 1.0,\n  \"pitch\": 1.0,\n  \"volume\": 1.0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai-audio",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai-audio"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏆 Leaderboard",
+      "item": [
+        {
+          "name": "Get Global Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard?limit=50&sortBy=total_xp",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaderboard"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "total_xp"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Weekly Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaderboard/weekly?limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["leaderboard", "weekly"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🎯 Daily Challenges",
+      "item": [
+        {
+          "name": "Get Daily Challenges",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/daily-challenges",
+              "host": ["{{baseUrl}}"],
+              "path": ["daily-challenges"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Daily Challenges",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/daily-challenges/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["daily-challenges", "user", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Daily Challenge",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"challengeId\": \"{{userId}}\",\n  \"userId\": \"{{userId}}\",\n  \"score\": 85,\n  \"timeSpent\": 120\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/daily-challenges/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["daily-challenges", "complete"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

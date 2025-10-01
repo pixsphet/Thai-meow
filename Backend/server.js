@@ -1,262 +1,401 @@
+require('dotenv').config();
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose(); // ใช้ sqlite3 library
+const cors = require('cors');
+const connectDB = require('./config/database');
+const Lesson = require('./models/Lesson');
+const Question = require('./models/Question');
+const UserProgress = require('./models/UserProgress');
+const Vocabulary = require('./models/Vocabulary');
+
+// Import routes
+const vocabularyRoutes = require('./routes/vocabulary');
+const gameRoutes = require('./routes/games');
+const arrangeSentenceRoutes = require('./routes/arrange-sentence');
+const audioRoutes = require('./routes/audio');
+const simpleAudioRoutes = require('./routes/simple-audio');
+const aiAudioRoutes = require('./routes/ai-audio');
+const authRoutes = require('./routes/auth');
+const usersRoutes = require('./routes/users');
+const progressRoutes = require('./routes/progress');
+const achievementRoutes = require('./routes/achievements');
+const leaderboardRoutes = require('./routes/leaderboard');
+const dailyChallengeRoutes = require('./routes/dailyChallenges');
+const vocabWordsRoutes = require('./routes/vocabWords');
+const lessonsRoutes = require('./routes/lessons');
+const elevenLabsRoutes = require('./routes/elevenlabs');
+
+// Connect to MongoDB
+connectDB();
+
 const app = express();
 
-// เชื่อมต่อกับฐานข้อมูล SQLite
-const db = new sqlite3.Database('./db/thai_meow.db', (err) => {
-  if (err) {
-    console.error('Error opening database:', err.message);
-  } else {
-    console.log('Connected to the SQLite database');
+// Simple test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'API is working!', timestamp: new Date().toISOString() });
+});
+
+// Simple progress endpoint for testing
+app.get('/api/progress/:userId', async (req, res) => {
+  try {
+    const Progress = require('./models/Progress');
+    const mongoose = require('mongoose');
+    
+    // Convert string to ObjectId
+    const userId = new mongoose.Types.ObjectId(req.params.userId);
+    const progress = await Progress.findOne({ user_id: userId });
+    
+    if (!progress) {
+      // Create initial progress if doesn't exist
+      const newProgress = new Progress({
+        user_id: userId,
+        total_xp: 0,
+        level: 1,
+        streak: 0,
+        levels: [],
+        games_played: [],
+        categories: [],
+        statistics: {
+          total_play_time: 0,
+          total_games_played: 0,
+          average_score: 0,
+          best_streak: 0,
+          perfect_scores: 0,
+          total_correct_answers: 0,
+          total_questions_answered: 0
+        },
+        achievements: [],
+        daily_progress: []
+      });
+      await newProgress.save();
+      return res.json(newProgress);
+    }
+    
+    res.json(progress);
+  } catch (error) {
+    console.error('Error fetching progress:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
+// Middleware
+app.use(cors());
 app.use(express.json());
 
-// ดึงข้อมูลบทเรียนทั้งหมด หรือดึงตาม level
-app.get('/lessons', (req, res) => {
-  const level = req.query.level; // รับ query parameter เช่น ?level=beginner
-  let query = 'SELECT * FROM lessons';
-  const params = [];
+// Routes
+app.use('/api/vocabulary', vocabularyRoutes);
+app.use('/api/games', gameRoutes);
+app.use('/api/arrange-sentence', arrangeSentenceRoutes);
+app.use('/api/audio', audioRoutes);
+app.use('/api/simple-audio', simpleAudioRoutes);
+app.use('/api/ai-audio', aiAudioRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/achievements', achievementRoutes);
+app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/daily-challenges', dailyChallengeRoutes);
+app.use('/api/vocab-words', vocabWordsRoutes);
+app.use('/api/lessons', lessonsRoutes);
+app.use('/api/elevenlabs', elevenLabsRoutes);
 
-  if (level) {
-    query += ' WHERE level = ?';
-    params.push(level);
-  }
-
-  db.all(query, params, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
-});
+// This route is now handled by lessonsRoutes
 
 // ดึงคำศัพท์จากบทเรียน
-app.get('/vocab/:lessonId', (req, res) => {
-  const { lessonId } = req.params;
-  const query = 'SELECT * FROM vocab WHERE lesson_id = ?';
-
-  db.all(query, [lessonId], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/api/vocab/:lessonId', async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const questions = await Question.find({
+      lesson_id: parseInt(lessonId),
+      question_type: 'multiple_choice'
+    });
+    
+    // Transform to match old API format
+    const vocab = questions.map(q => ({
+      id: q._id,
+      lesson_id: q.lesson_id,
+      word: q.word,
+      romanization: q.romanization,
+      meaning: q.correct_answer
+    }));
+    
+    res.json(vocab);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ดึงบทสนทนาจากบทเรียน
-app.get('/dialogue/:lessonId', (req, res) => {
-  const { lessonId } = req.params;
-  const query = 'SELECT * FROM dialogue WHERE lesson_id = ?';
-
-  db.all(query, [lessonId], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/api/dialogue/:lessonId', async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const questions = await Question.find({
+      lesson_id: parseInt(lessonId),
+      question_type: 'translation'
+    });
+    
+    // Transform to match old API format
+    const dialogue = questions.map(q => ({
+      id: q._id,
+      lesson_id: q.lesson_id,
+      sentence: q.word,
+      romanization: q.romanization,
+      meaning: q.correct_answer
+    }));
+    
+    res.json(dialogue);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ดึงคำถามแบบทดสอบจากบทเรียน
-app.get('/quiz/:lessonId', (req, res) => {
-  const { lessonId } = req.params;
-  const query = 'SELECT * FROM quiz WHERE lesson_id = ?';
-
-  db.all(query, [lessonId], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/api/quiz/:lessonId', async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const questions = await Question.find({
+      lesson_id: parseInt(lessonId),
+      question_type: { $in: ['multiple_choice', 'translation', 'arrange_sentence'] }
+    });
+    
+    res.json(questions);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ดึงสถานการณ์การสนทนา
-app.get('/scenario/:lessonId', (req, res) => {
-  const { lessonId } = req.params;
-  const query = 'SELECT * FROM scenario WHERE lesson_id = ?';
-
-  db.all(query, [lessonId], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/api/scenario/:lessonId', async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const questions = await Question.find({
+      lesson_id: parseInt(lessonId),
+      question_type: 'arrange_sentence'
+    });
+    
+    // Transform to match old API format
+    const scenario = questions.map(q => ({
+      id: q._id,
+      lesson_id: q.lesson_id,
+      sentence: q.word,
+      romanization: q.romanization
+    }));
+    
+    res.json(scenario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // สุ่มคำศัพท์สำหรับเกม
-app.get('/game/vocab/:lessonId', (req, res) => {
-  const { lessonId } = req.params;
-  const { count = 10 } = req.query; // จำนวนคำศัพท์ที่ต้องการ (default 10)
-  
-  const query = `
-    SELECT * FROM vocab 
-    WHERE lesson_id = ? 
-    ORDER BY RANDOM() 
-    LIMIT ?
-  `;
-  
-  db.all(query, [lessonId, count], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/api/game/vocab/:lessonId', async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const { count = 10 } = req.query;
+    
+    const questions = await Question.aggregate([
+      { $match: { 
+        lesson_id: parseInt(lessonId),
+        question_type: 'multiple_choice'
+      }},
+      { $sample: { size: parseInt(count) } }
+    ]);
+    
+    // Transform to match old API format
+    const vocab = questions.map(q => ({
+      id: q._id,
+      lesson_id: q.lesson_id,
+      word: q.word,
+      romanization: q.romanization,
+      meaning: q.correct_answer
+    }));
+    
+    res.json(vocab);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // สุ่มคำศัพท์จากหลายบทเรียน
-app.get('/game/vocab/random', (req, res) => {
-  const { count = 10, level = 'Beginner' } = req.query;
-  
-  const query = `
-    SELECT v.*, l.title as lesson_title 
-    FROM vocab v
-    JOIN lessons l ON v.lesson_id = l.lesson_id
-    WHERE l.level = ?
-    ORDER BY RANDOM()
-    LIMIT ?
-  `;
-  
-  db.all(query, [level, count], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/api/game/vocab/random', async (req, res) => {
+  try {
+    const { count = 10, level = 'Beginner' } = req.query;
+    
+    const questions = await Question.aggregate([
+      {
+        $lookup: {
+          from: 'lessons',
+          localField: 'lesson_id',
+          foreignField: 'lesson_id',
+          as: 'lesson'
+        }
+      },
+      { $unwind: '$lesson' },
+      { $match: { 
+        'lesson.level': level,
+        question_type: 'multiple_choice'
+      }},
+      { $sample: { size: parseInt(count) } }
+    ]);
+    
+    // Transform to match old API format
+    const vocab = questions.map(q => ({
+      id: q._id,
+      lesson_id: q.lesson_id,
+      word: q.word,
+      romanization: q.romanization,
+      meaning: q.correct_answer,
+      lesson_title: q.lesson.title
+    }));
+    
+    res.json(vocab);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // สร้างคำถามแบบเลือกตอบ
-app.get('/game/quiz/:lessonId', (req, res) => {
-  const { lessonId } = req.params;
-  const { count = 5 } = req.query;
-
-  // ดึงคำศัพท์หลัก
-  const mainQuery = `
-    SELECT * FROM vocab
-    WHERE lesson_id = ?
-    ORDER BY RANDOM()
-    LIMIT ?
-  `;
-
-  db.all(mainQuery, [lessonId, count], (err, mainWords) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-
-    if (mainWords.length === 0) {
-      res.json([]);
-      return;
-    }
-
-    // สร้างคำถามสำหรับแต่ละคำ
-    const questions = mainWords.map(word => {
-      // สร้างตัวเลือกแบบง่าย (ใช้คำศัพท์อื่นในบทเรียนเดียวกัน)
-      const otherWords = mainWords.filter(w => w.id !== word.id);
-      const distractors = otherWords.slice(0, 3).map(w => w.meaning);
-
-      // สร้างตัวเลือก
-      const options = [
-        { text: word.meaning, correct: true },
-        ...distractors.map(meaning => ({ text: meaning, correct: false }))
-      ];
-
-      // สุ่มลำดับตัวเลือก
-      const shuffledOptions = options.sort(() => Math.random() - 0.5);
-
-      return {
-        id: word.id,
-        word: word.word,
-        romanization: word.romanization,
-        options: shuffledOptions,
-        correctAnswer: word.meaning
-      };
-    });
-
+app.get('/api/game/quiz/:lessonId', async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const { count = 5 } = req.query;
+    
+    const questions = await Question.aggregate([
+      { $match: { 
+        lesson_id: parseInt(lessonId),
+        question_type: 'multiple_choice'
+      }},
+      { $sample: { size: parseInt(count) } }
+    ]);
+    
     res.json(questions);
-  });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // บันทึกความคืบหน้าผู้ใช้
-app.post('/user/progress', (req, res) => {
-  const { lessonId, score, totalQuestions, completedAt } = req.body;
-  
-  // คำนวณเปอร์เซ็นต์
-  const percentage = totalQuestions > 0 ? (score / totalQuestions) : 0;
-  const status = percentage >= 0.8 ? 'done' : 'current';
-
-  // บันทึกข้อมูลความคืบหน้า (ใช้โครงสร้างเดิม)
-  const insertQuery = `
-    INSERT OR REPLACE INTO user_progress (user_id, lesson_id, progress, status)
-    VALUES (1, ?, ?, ?)
-  `;
-
-  db.run(insertQuery, [lessonId, percentage, status], function(err) {
-    if (err) {
-      console.error('Error inserting progress:', err.message);
-      res.status(500).json({ error: err.message });
-    } else {
-      console.log(`Progress saved: lessonId=${lessonId}, score=${score}/${totalQuestions}, percentage=${(percentage*100).toFixed(1)}%`);
-      res.json({ 
-        success: true, 
-        message: 'Progress saved successfully',
-        percentage: percentage * 100,
-        status: status
-      });
-    }
-  });
+app.post('/api/user/progress', async (req, res) => {
+  try {
+    const { lessonId, score, totalQuestions, completedAt } = req.body;
+    
+    // คำนวณเปอร์เซ็นต์
+    const percentage = totalQuestions > 0 ? (score / totalQuestions) : 0;
+    const diamondsEarned = Math.floor(score * 2); // 2 diamonds per correct answer
+    
+    const progressData = {
+      user_id: '1', // Default user ID
+      lesson_id: lessonId,
+      score: score,
+      total_questions: totalQuestions,
+      completed_at: completedAt ? new Date(completedAt) : new Date(),
+      diamonds_earned: diamondsEarned
+    };
+    
+    // Update or create progress record
+    const progress = await UserProgress.findOneAndUpdate(
+      { user_id: '1', lesson_id: lessonId },
+      progressData,
+      { upsert: true, new: true }
+    );
+    
+    console.log(`Progress saved: lessonId=${lessonId}, score=${score}/${totalQuestions}, diamonds=${diamondsEarned}`);
+    
+    res.json({ 
+      success: true, 
+      message: 'Progress saved successfully',
+      percentage: percentage * 100,
+      diamonds_earned: diamondsEarned,
+      progress: progress
+    });
+  } catch (error) {
+    console.error('Error saving progress:', error.message);
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ดึงความคืบหน้าผู้ใช้
-app.get('/user/progress', (req, res) => {
-  const query = `
-    SELECT up.*, l.title as lesson_title, l.level
-    FROM user_progress up
-    LEFT JOIN lessons l ON up.lesson_id = l.id
-    WHERE up.user_id = 1
-    ORDER BY up.lesson_id ASC
-  `;
-
-  db.all(query, [], (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(rows);
-    }
-  });
+app.get('/api/user/progress', async (req, res) => {
+  try {
+    const progress = await UserProgress.aggregate([
+      {
+        $lookup: {
+          from: 'lessons',
+          localField: 'lesson_id',
+          foreignField: 'lesson_id',
+          as: 'lesson'
+        }
+      },
+      { $unwind: '$lesson' },
+      {
+        $project: {
+          user_id: 1,
+          lesson_id: 1,
+          progress: { $divide: ['$score', '$total_questions'] },
+          status: {
+            $cond: {
+              if: { $gte: [{ $divide: ['$score', '$total_questions'] }, 0.8] },
+              then: 'done',
+              else: 'current'
+            }
+          },
+          lesson_title: '$lesson.title',
+          level: '$lesson.level',
+          diamonds_earned: 1,
+          completed_at: 1
+        }
+      },
+      { $sort: { lesson_id: 1 } }
+    ]);
+    
+    res.json(progress);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // ดึงสถิติผู้ใช้
-app.get('/user/stats', (req, res) => {
-  const query = `
-    SELECT 
-      COUNT(*) as total_lessons_completed,
-      AVG(progress) as average_progress,
-      MAX(progress) as best_progress,
-      MIN(progress) as worst_progress,
-      SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as completed_lessons
-    FROM user_progress
-    WHERE user_id = 1
-  `;
-
-  db.get(query, [], (err, row) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-    } else {
-      res.json(row);
-    }
-  });
+app.get('/api/user/stats', async (req, res) => {
+  try {
+    const stats = await UserProgress.aggregate([
+      {
+        $group: {
+          _id: null,
+          total_lessons_completed: { $sum: 1 },
+          average_progress: { $avg: { $divide: ['$score', '$total_questions'] } },
+          best_progress: { $max: { $divide: ['$score', '$total_questions'] } },
+          worst_progress: { $min: { $divide: ['$score', '$total_questions'] } },
+          completed_lessons: {
+            $sum: {
+              $cond: [
+                { $gte: [{ $divide: ['$score', '$total_questions'] }, 0.8] },
+                1,
+                0
+              ]
+            }
+          },
+          total_diamonds: { $sum: '$diamonds_earned' }
+        }
+      }
+    ]);
+    
+    const result = stats[0] || {
+      total_lessons_completed: 0,
+      average_progress: 0,
+      best_progress: 0,
+      worst_progress: 0,
+      completed_lessons: 0,
+      total_diamonds: 0
+    };
+    
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // เริ่มเซิร์ฟเวอร์
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log('Connected to MongoDB');
 });
