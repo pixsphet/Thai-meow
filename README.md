@@ -1,129 +1,263 @@
-# 🐱 Thai Meow - แอพเรียนภาษาไทยแนว Duolingo
+# 🇹🇭 Thai Meow - Thai Language Learning App
 
-## 📖 **เกี่ยวกับแอพ**
+A comprehensive Thai language learning application built with React Native and Node.js, featuring interactive games, AI-powered text-to-speech, and progress tracking.
 
-Thai Meow เป็นแอพพลิเคชันเรียนภาษาไทยแนว Duolingo ที่ออกแบบมาให้ผู้ใช้เรียนรู้ภาษาไทยอย่างสนุกสนานและมีประสิทธิภาพ ผ่านระบบเกมและ gamification ที่ครบถ้วน
+![Thai Meow App](https://img.shields.io/badge/React%20Native-Expo-blue)
+![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-green)
+![Database](https://img.shields.io/badge/Database-MongoDB-orange)
+![TTS](https://img.shields.io/badge/TTS-AI%20For%20Thai%20%2B%20ElevenLabs-red)
 
-## ✨ **ฟีเจอร์หลัก**
+## ✨ Features
 
-### 🎯 **ระบบการเรียนรู้**
-- **พยัญชนะไทย ก-ฮ**: 44 ตัว พร้อมภาพประกอบและเสียง
-- **สระไทย**: 18 ตัว แบ่งเป็น short, long, และ special
-- **วรรณยุกต์ไทย**: 4 รูป 5 เสียง
-- **AI TTS**: ระบบออกเสียงที่ถูกต้องและชัดเจน
+### 🎮 Interactive Learning Games
+- **Matching Game**: Match Thai words with English translations
+- **Arrange Sentence**: Arrange words to form correct sentences
+- **Multiple Choice**: Choose the correct answer from options
+- **Drag & Drop**: Interactive vocabulary building
+- **Fill in the Blanks**: Complete sentences with missing words
 
-### 🎮 **ระบบเกม 5 ประเภท**
-1. **🎯 จับคู่ (Matching Game)**
-2. **❓ เลือกคำตอบ (Multiple Choice)**
-3. **✏️ เติมคำ (Fill in the Blank)**
-4. **📋 เรียงลำดับ (Ordering Game)**
-5. **🧠 แบบทดสอบ (Quiz)**
+### 📚 Comprehensive Content
+- **44 Thai Consonants** with pronunciation guides
+- **10 Thai Vowels** with audio examples
+- **5 Thai Tones** with visual indicators
+- **150+ Vocabulary Words** across 10 categories:
+  - Greetings (การทักทาย)
+  - Family (ครอบครัว)
+  - Numbers (ตัวเลข)
+  - Colors (สี)
+  - Food (อาหาร)
+  - Animals (สัตว์)
+  - Body Parts (อวัยวะ)
+  - And more!
 
-### 🏆 **ระบบ Gamification**
-- **XP และ Level System**: ระบบคะแนนและเลเวล
-- **Lives System**: ระบบชีวิต (3 ชีวิต)
-- **Streak System**: ระบบเล่นติดต่อกัน
-- **Achievement System**: ระบบรางวัลและความสำเร็จ
-- **Leaderboard**: ระบบอันดับผู้เล่น
+### 🔊 AI-Powered Text-to-Speech
+- **AI For Thai TTS**: High-quality Thai pronunciation
+- **ElevenLabs Integration**: Premium voice synthesis
+- **Vaja9 TTS**: Advanced Thai speech synthesis
+- **Offline Audio Caching**: Fast, reliable audio playback
 
-### ⚙️ **ระบบตั้งค่า**
-- **Theme Mode**: Dark/Light Theme
-- **Language**: ภาษาไทย/อังกฤษ
-- **Notifications**: ระบบแจ้งเตือน
-- **Learning Level**: ระดับการเรียนรู้
+### 📊 Progress Tracking
+- **User Profiles**: Personalized learning experience
+- **Achievement System**: Unlock badges and rewards
+- **Streak Tracking**: Daily learning motivation
+- **XP & Leveling**: Gamified progression system
+- **Leaderboard**: Compete with other learners
 
-## 🚀 **การติดตั้งและใช้งาน**
+### 🎯 Game Modes
+- **Lesson Mode**: Structured learning path
+- **Practice Mode**: Free-form practice
+- **Quiz Mode**: Test your knowledge
+- **Challenge Mode**: Daily challenges and goals
 
-### **Prerequisites**
-- Node.js (v14 หรือใหม่กว่า)
-- MongoDB
+## 🛠️ Technical Stack
+
+### Frontend
+- **React Native** with Expo framework
+- **AsyncStorage** for local data persistence
+- **Expo AV** for audio playback
+- **React Navigation** for app navigation
+- **Context API** for state management
+
+### Backend
+- **Node.js** with Express.js framework
+- **MongoDB** with Mongoose ODM
+- **JWT Authentication** for user management
+- **RESTful API** design
+- **CORS** enabled for cross-origin requests
+
+### Database Models
+- **User**: User profiles and authentication
+- **Vocabulary**: Thai words and translations
+- **Lesson**: Learning modules and content
+- **Progress**: User learning progress
+- **Achievement**: Badges and rewards
+- **GameResult**: Game performance tracking
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or Atlas)
 - Expo CLI
-- React Native CLI
+- iOS Simulator or Android Emulator
 
-### **การติดตั้ง Backend**
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/pixsphet/Project-Thai-Meow.git
+   cd Project-Thai-Meow
+   ```
+
+2. **Install Backend Dependencies**
+   ```bash
+   cd Backend
+   npm install
+   ```
+
+3. **Install Frontend Dependencies**
+   ```bash
+   cd ../Frontend/thai-meow
+   npm install
+   ```
+
+4. **Set up Environment Variables**
+   ```bash
+   # Backend/.env
+   MONGODB_URI=mongodb://localhost:27017/thai-meow
+   JWT_SECRET=your_jwt_secret_key
+   PORT=3000
+   ```
+
+5. **Start MongoDB**
+   ```bash
+   # macOS with Homebrew
+   brew services start mongodb-community
+   
+   # Or use MongoDB Atlas
+   # Update MONGODB_URI in .env file
+   ```
+
+6. **Seed the Database**
+   ```bash
+   cd Backend
+   node seed-atlas.js
+   node seed-complete-vocabulary.js
+   ```
+
+7. **Start the Backend Server**
+   ```bash
+   cd Backend
+   node server.js
+   ```
+
+8. **Start the Frontend App**
+   ```bash
+   cd Frontend/thai-meow
+   npx expo start
+   ```
+
+## 📱 App Structure
+
+```
+Project-Thai-Meow/
+├── Backend/                 # Node.js Backend
+│   ├── models/             # MongoDB Models
+│   ├── routes/             # API Routes
+│   ├── services/           # TTS Services
+│   ├── seed/               # Database Seeding
+│   └── server.js           # Main Server File
+├── Frontend/               # React Native Frontend
+│   └── thai-meow/
+│       ├── src/
+│       │   ├── components/ # Reusable Components
+│       │   ├── screens/    # App Screens
+│       │   ├── services/   # API Services
+│       │   └── utils/      # Utility Functions
+│       └── App.js          # Main App Component
+└── README.md
+```
+
+## 🔧 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+
+### Vocabulary
+- `GET /api/vocab-words` - Get all vocabulary
+- `GET /api/vocab-words/lesson/:lessonKey` - Get lesson vocabulary
+- `GET /api/vocab-words/random` - Get random vocabulary
+
+### Games
+- `POST /api/games/matching` - Matching game data
+- `POST /api/games/arrange-sentence` - Sentence arrangement game
+- `POST /api/games/quiz` - Quiz game data
+
+### Progress
+- `GET /api/progress/:userId` - Get user progress
+- `POST /api/progress` - Update user progress
+- `GET /api/achievements` - Get user achievements
+
+## 🎨 UI/UX Features
+
+- **Duolingo-style Interface**: Familiar, intuitive design
+- **Cat Mascot**: Friendly Thai Meow character
+- **Smooth Animations**: Engaging user experience
+- **Responsive Design**: Works on all screen sizes
+- **Dark/Light Theme**: Customizable appearance
+- **Haptic Feedback**: Tactile response for interactions
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Secure user sessions
+- **Password Hashing**: bcrypt encryption
+- **Input Validation**: Sanitized user inputs
+- **CORS Protection**: Cross-origin security
+- **Rate Limiting**: API abuse prevention
+
+## 📈 Performance Optimizations
+
+- **Audio Caching**: Pre-loaded audio files
+- **Image Optimization**: Compressed assets
+- **Lazy Loading**: On-demand content loading
+- **Database Indexing**: Optimized queries
+- **Memory Management**: Efficient resource usage
+
+## 🧪 Testing
 
 ```bash
+# Backend Tests
 cd Backend
-npm install
-npm start
-```
+npm test
 
-### **การติดตั้ง Frontend**
-
-```bash
+# Frontend Tests
 cd Frontend/thai-meow
-npm install
-npx expo start
+npm test
 ```
 
-### **การรันแอพ**
+## 📦 Deployment
 
-1. เปิด Terminal 2 หน้าต่าง
-2. รัน Backend: `cd Backend && npm start`
-3. รัน Frontend: `cd Frontend/thai-meow && npx expo start`
-4. เปิดแอพบนอุปกรณ์หรือ simulator
+### Backend Deployment
+1. Deploy to Heroku, Vercel, or AWS
+2. Set up MongoDB Atlas
+3. Configure environment variables
+4. Deploy with `git push heroku main`
 
-## 📱 **การใช้งาน**
+### Frontend Deployment
+1. Build with `expo build`
+2. Deploy to App Store/Google Play
+3. Or use Expo EAS Build
 
-### **สำหรับผู้ใช้ใหม่**
-1. เปิดแอพ → เลือกระดับการเรียนรู้
-2. เลือกหมวดหมู่ (พยัญชนะ, สระ, วรรณยุกต์)
-3. เรียนรู้ผ่าน Mini-Lesson
-4. เล่นเกมหลากหลายประเภท
-5. ติดตามความคืบหน้าผ่านระบบ XP และ Level
+## 🤝 Contributing
 
-### **การตั้งค่า**
-1. ไปที่ Profile → การตั้งค่า
-2. หรือใช้ Settings tab ใน MainTab
-3. ตั้งค่าต่างๆ ตามต้องการ
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 🛠️ **เทคโนโลยีที่ใช้**
+## 📄 License
 
-### **Backend**
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- AI TTS Service
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### **Frontend**
-- React Native
-- Expo
-- React Navigation
-- Expo Speech
-- Linear Gradient
-- Lottie Animations
+## 🙏 Acknowledgments
 
-## 📊 **โครงสร้างฐานข้อมูล**
+- **AI For Thai** for Thai TTS services
+- **ElevenLabs** for premium voice synthesis
+- **Expo** for React Native framework
+- **MongoDB** for database services
+- **Thai Language Community** for content inspiration
 
-### **Collections**
-- **Lessons**: ข้อมูลบทเรียน
-- **Vocabulary**: ข้อมูลคำศัพท์
-- **UserProgress**: ความคืบหน้าผู้ใช้
-- **GameResult**: ผลการเล่นเกม
+## 📞 Support
 
-## 🎯 **เป้าหมาย**
-
-สร้างแอพเรียนภาษาไทยที่:
-- ✅ ใช้งานง่ายและสนุกสนาน
-- ✅ มีระบบเกมที่หลากหลาย
-- ✅ รองรับการออกเสียงที่ถูกต้อง
-- ✅ มีระบบ gamification ที่ครบถ้วน
-- ✅ UI/UX ที่สวยงามและทันสมัย
-
-## 📞 **ติดต่อ**
-
-หากมีคำถามหรือต้องการความช่วยเหลือ กรุณาติดต่อผ่าน:
-- 📧 Email: support@thai-meow.com
-- 📱 Phone: +66-xxx-xxxx
-- 🌐 Website: www.thai-meow.com
-
-## 📄 **License**
-
-MIT License - ดูรายละเอียดในไฟล์ LICENSE
+For support, email support@thai-meow.com or create an issue on GitHub.
 
 ---
 
-## 🎉 **เริ่มต้นการเรียนรู้ภาษาไทยกับ Thai Meow!**
+**Made with ❤️ for Thai language learners worldwide**
 
-แอพพลิเคชัน Thai Meow พร้อมให้คุณเริ่มต้นการเรียนรู้ภาษาไทยอย่างสนุกสนานและมีประสิทธิภาพ!
+[![GitHub stars](https://img.shields.io/github/stars/pixsphet/Project-Thai-Meow?style=social)](https://github.com/pixsphet/Project-Thai-Meow)
+[![GitHub forks](https://img.shields.io/github/forks/pixsphet/Project-Thai-Meow?style=social)](https://github.com/pixsphet/Project-Thai-Meow)
+[![GitHub issues](https://img.shields.io/github/issues/pixsphet/Project-Thai-Meow)](https://github.com/pixsphet/Project-Thai-Meow/issues)
