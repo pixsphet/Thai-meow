@@ -1,6 +1,12 @@
 const mongoose = require('mongoose');
 
 const lessonSchema = new mongoose.Schema({
+  key: {
+    type: String,
+    index: true,
+    unique: true,
+    sparse: true
+  },
   titleTH: String,
   level: { 
     type: String, 
